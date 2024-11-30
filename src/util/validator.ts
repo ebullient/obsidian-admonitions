@@ -145,6 +145,13 @@ export class AdmonitionValidator {
                 failed: "type"
             };
         }
+        if (/[A-Z]/.test(type)) {
+            return {
+                success: false,
+                message: t("Admonition type cannot contain uppercase letters."),
+                failed: "type"
+            };
+        }
         if (type != oldType && type in plugin.data.userAdmonitions) {
             return {
                 success: false,
