@@ -3,6 +3,8 @@ import process from "process";
 import builtins from "builtin-modules";
 import { config } from "dotenv";
 import { sassPlugin } from "esbuild-sass-plugin";
+import { copyFileSync, mkdirSync } from "fs";
+import { resolve } from "path";
 
 config();
 
@@ -59,6 +61,18 @@ esbuild
         treeShaking: true,
         outdir: dir,
 
-        plugins: [sassPlugin()]
+        plugins: [
+            sassPlugin(),
+            {
+                name: "copy-manifest",
+                setup(build) {
+                    build.onEnd(() => {
+                        const outdir = build.initialOptions.outdir;
+                        mkdirSync(outdir, { recursive: true });
+                        copyFileSync("manifest.json", resolve(outdir, "manifest.json"));
+                    });
+                }
+            }
+        ]
     })
     .catch(() => process.exit(1));
