@@ -9,7 +9,7 @@ workspace.code-workspace
 node_modules
 
 # build
-build/
+build
 *.js.map
 .DS_Store
 *build.js
