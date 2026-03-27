@@ -18,61 +18,65 @@ const prod = process.argv[2] === "production";
 
 const dir = prod ? "./build" : process.env.OUTDIR;
 
-esbuild
-    .build({
-        banner: {
-            js: banner
-        },
-        entryPoints: ["src/main.ts", "src/styles.css"],
-        bundle: true,
-        external: [
-            "obsidian",
-            "electron",
-            "codemirror",
-            "@codemirror/autocomplete",
-            "@codemirror/closebrackets",
-            "@codemirror/collab",
-            "@codemirror/commands",
-            "@codemirror/comment",
-            "@codemirror/fold",
-            "@codemirror/gutter",
-            "@codemirror/highlight",
-            "@codemirror/history",
-            "@codemirror/language",
-            "@codemirror/lint",
-            "@codemirror/matchbrackets",
-            "@codemirror/panel",
-            "@codemirror/rangeset",
-            "@codemirror/rectangular-selection",
-            "@codemirror/search",
-            "@codemirror/state",
-            "@codemirror/stream-parser",
-            "@codemirror/text",
-            "@codemirror/tooltip",
-            "@codemirror/view",
-            ...builtins
-        ],
-        format: "cjs",
-        watch: !prod,
-        minify: prod,
-        target: "es2020",
-        logLevel: "info",
-        sourcemap: !prod ? "inline" : false,
-        treeShaking: true,
-        outdir: dir,
+const options = {
+    banner: {
+        js: banner
+    },
+    entryPoints: ["src/main.ts", "src/styles.css"],
+    bundle: true,
+    external: [
+        "obsidian",
+        "electron",
+        "codemirror",
+        "@codemirror/autocomplete",
+        "@codemirror/closebrackets",
+        "@codemirror/collab",
+        "@codemirror/commands",
+        "@codemirror/comment",
+        "@codemirror/fold",
+        "@codemirror/gutter",
+        "@codemirror/highlight",
+        "@codemirror/history",
+        "@codemirror/language",
+        "@codemirror/lint",
+        "@codemirror/matchbrackets",
+        "@codemirror/panel",
+        "@codemirror/rangeset",
+        "@codemirror/rectangular-selection",
+        "@codemirror/search",
+        "@codemirror/state",
+        "@codemirror/stream-parser",
+        "@codemirror/text",
+        "@codemirror/tooltip",
+        "@codemirror/view",
+        ...builtins
+    ],
+    format: "cjs",
+    minify: prod,
+    target: "es2020",
+    logLevel: "info",
+    sourcemap: !prod ? "inline" : false,
+    treeShaking: true,
+    outdir: dir,
 
-        plugins: [
-            sassPlugin(),
-            {
-                name: "copy-manifest",
-                setup(build) {
-                    build.onEnd(() => {
-                        const outdir = build.initialOptions.outdir;
-                        mkdirSync(outdir, { recursive: true });
-                        copyFileSync("manifest.json", resolve(outdir, "manifest.json"));
-                    });
-                }
+    plugins: [
+        sassPlugin(),
+        {
+            name: "copy-manifest",
+            setup(build) {
+                build.onEnd(() => {
+                    const outdir = build.initialOptions.outdir;
+                    mkdirSync(outdir, { recursive: true });
+                    copyFileSync("manifest.json", resolve(outdir, "manifest.json"));
+                });
             }
-        ]
-    })
-    .catch(() => process.exit(1));
+        }
+    ]
+};
+
+if (prod) {
+    esbuild.build(options).catch(() => process.exit(1));
+} else {
+    const ctx = await esbuild.context(options);
+    await ctx.watch();
+}
