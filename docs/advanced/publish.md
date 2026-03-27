@@ -1,7 +1,7 @@
 # Publish.js and Admonitions
 
 > [!CAUTION]
-> This feature was **removed in [v10.0.0](https://github.com/javalent/admonitions/releases/tag/10.0.0)**. It is recommended to use the callouts `> [!custom-admonition-name]` created from the Admonition plugin instead.
+> This feature was **removed in [v10.0.0](https://github.com/ebullient/obsidian-admonitions/releases/tag/10.0.0)**. It is recommended to use the callouts `> [!custom-admonition-name]` created from the Admonition plugin instead.
 
 In general, plugins for Obsidian cannot currently be used on publish sites. Starting from version 6.4.0, Admonitions had a feature to generate a JavaScript file that could be utilized on Publish sites with custom domains.
 

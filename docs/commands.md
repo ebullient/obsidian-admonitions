@@ -30,9 +30,3 @@ Inserts the selected type as a code block admonition (`` ```ad-type ``), prepopu
 
 Inserts the selected type as a code block admonition with a `title:` parameter. The cursor is placed on the title line so you can type it immediately.
 
-## Mermaid Graphs
-
-Admonitions are compatible with Mermaid graphs. However, there are some restrictions:
-
-- Mermaid graphs cannot be combined with embeds or transclusions.
-- Mermaid graphs do not function within admonitions that are set to collapse by default.

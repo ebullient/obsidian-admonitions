@@ -1,7 +1,7 @@
 # Admonitions CSS
 
 > [!TIP]
-> **SCSS Users**: The [main.scss](https://github.com/javalent/admonitions/blob/main/src/assets/main.scss) and [callout.scss](https://github.com/javalent/admonitions/blob/main/src/assets/callout.scss) are available directly from the repository.
+> **SCSS Users**: The [main.scss](https://github.com/ebullient/obsidian-admonitions/blob/main/src/assets/main.scss) and [callout.scss](https://github.com/ebullient/obsidian-admonitions/blob/main/src/assets/callout.scss) are available directly from the repository.
 
 ## Default CSS for All Admonitions
 

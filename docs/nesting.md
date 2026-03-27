@@ -47,4 +47,4 @@ console.log("Hello!");
 ````
 `````
 
-![Nested Code](https://github.com/javalent/admonitions/blob/main/publish/images/nested-code.png?raw=true)
+![Nested Code](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/images/nested-code.png?raw=true)

@@ -1,6 +1,6 @@
 # Admonition Options
 
-[![Admonitions demo](https://github.com/javalent/admonitions/blob/main/publish/gifs/all.gif?raw=true)](https://github.com/javalent/admonitions)
+[![Admonitions demo](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/gifs/all.gif?raw=true)](https://github.com/ebullient/obsidian-admonitions)
 
 Placing a code block with the admonition type:
 
@@ -12,7 +12,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 
 Becomes:
 
-![Default Admonition Note](https://github.com/javalent/admonitions/blob/main/publish/images/default.png?raw=true)
+![Default Admonition Note](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/images/default.png?raw=true)
 
 ## Options
 
@@ -51,7 +51,7 @@ title: $\sum\frac{\pi}{\sigma}$
 
 Becomes:
 
-![Rendered title markdown](https://github.com/javalent/admonitions/blob/main/publish/images/rendered-title-markdown.png?raw=true)
+![Rendered title markdown](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/images/rendered-title-markdown.png?raw=true)
 
 Leave the title field blank to only display the admonition content without a title.
 
@@ -62,7 +62,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 ```
 ````
 
-![No title](https://github.com/javalent/admonitions/blob/main/publish/images/no-title.png?raw=true)
+![No title](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/images/no-title.png?raw=true)
 
 ### Collapsible
 
@@ -78,7 +78,10 @@ If the admonition's title is left blank, the `collapse` parameter has no effect.
 
 You can set all admonitions to be collapsible by default in the [settings](settings.md).
 
-![Collapse demo](https://github.com/javalent/admonitions/blob/main/publish/gifs/collapse.gif?raw=true)
+![Collapse demo](https://github.com/ebullient/obsidian-admonitions/blob/main/publish/gifs/collapse.gif?raw=true)
+
+> [!NOTE]
+> Mermaid diagrams do not render inside code block admonitions that use `collapse: closed` or have "Collapsible By Default" enabled. Mermaid also cannot be combined with embeds or transclusions inside an admonition.
 
 ### Icon
 

@@ -21,6 +21,30 @@ The Admonitions plugin for [Obsidian](https://obsidian.md) adds block-styled con
 6. Get access to a free FontAwesome Icon library, with options for Opticon and RPG Awesome.
 7. Check out the Obsidian TTRPG-Share's [Repository of Admonitions](https://github.com/Obsidian-TTRPG-Community/ObsidianTTRPGShare/tree/0a8b23a52fcf6129ddae9fc21a2e7433f83cc343/System-Agnostic/admonitions) for some starter admonitions.
 
+## Quickstart
+
+Admonitions supports two syntaxes. Both use the same type names, and any custom type you define in settings works as either form.
+
+**Callout** (Obsidian's native syntax — simpler, works everywhere):
+
+```md
+> [!tip] This is a tip
+> This is the content of the admonition.
+```
+
+**Code block** (plugin syntax — supports additional parameters):
+
+````md
+```ad-tip
+title: This is a tip
+collapse: open
+
+This is the content of the admonition.
+```
+````
+
+Code blocks support `title:`, `collapse:`, `icon:`, and `color:` parameters. See [Admonition Options](options.md) for details.
+
 ## Suggested Reading Order
 
 1. [Admonition Options](options.md)
