@@ -602,6 +602,7 @@ ${editor.getDoc().getSelection()}
         return { ...ADMONITION_MAP, ...this.data.userAdmonitions };
     }
     async addAdmonition(admonition: Admonition): Promise<void> {
+        admonition.type = admonition.type.toLowerCase();
         this.data.userAdmonitions = {
             ...this.data.userAdmonitions,
             [admonition.type]: admonition
@@ -813,6 +814,19 @@ ${editor.getDoc().getSelection()}
                 await this.downloadIcon("rpg");
                 this.data.rpgDownloadedOnce = true;
             } catch (e) {}
+        }
+
+        if (this.data.userAdmonitions) {
+            for (const key of Object.keys(this.data.userAdmonitions)) {
+                const lower = key.toLowerCase();
+                if (lower !== key) {
+                    this.data.userAdmonitions[lower] = {
+                        ...this.data.userAdmonitions[key],
+                        type: lower
+                    };
+                    delete this.data.userAdmonitions[key];
+                }
+            }
         }
 
         await this.saveSettings();

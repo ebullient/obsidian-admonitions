@@ -145,6 +145,7 @@ export class AdmonitionValidator {
                 failed: "type"
             };
         }
+        type = type.toLowerCase();
         if (type != oldType && type in plugin.data.userAdmonitions) {
             return {
                 success: false,
