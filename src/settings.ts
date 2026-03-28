@@ -163,7 +163,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     title: modal.title,
                                     injectColor: modal.injectColor,
                                     noTitle: modal.noTitle,
-                                    copy: modal.copy
+                                    copy: modal.copy,
+                                    collapseType: modal.collapseType
                                 };
                                 this.plugin.addAdmonition(admonition);
 
@@ -965,7 +966,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                         title: modal.title,
                                         injectColor: modal.injectColor,
                                         noTitle: modal.noTitle,
-                                        copy: modal.copy
+                                        copy: modal.copy,
+                                        collapseType: modal.collapseType
                                     };
 
                                     if (
@@ -1037,6 +1039,7 @@ class SettingsModal extends Modal {
     admonitionPreviewParent: HTMLElement;
     admonitionPreview: HTMLElement;
     copy: boolean;
+    collapseType: "open" | "closed" | "none" = "none";
     originalType: string;
     editing = false;
     constructor(public plugin: ObsidianAdmonition, admonition?: Admonition) {
@@ -1051,6 +1054,7 @@ class SettingsModal extends Modal {
             this.injectColor = admonition.injectColor ?? this.injectColor;
             this.noTitle = admonition.noTitle ?? false;
             this.copy = admonition.copy ?? this.plugin.data.copyButton;
+            this.collapseType = admonition.collapseType ?? this.collapseType;
         }
     }
 
@@ -1177,6 +1181,25 @@ class SettingsModal extends Modal {
             .addToggle((t) => {
                 t.setValue(this.copy).onChange((v) => (this.copy = v));
             });
+        new Setting(settingDiv)
+            .setName(t("Default Collapsible"))
+            .setDesc(
+                createFragment((e) => {
+                    e.createSpan({
+                        text: t("This will be the default collapsible state for this admonition type.")
+                    });
+                })
+            )
+            .addDropdown((d) => {
+                d.addOption("open", "Open");
+                d.addOption("closed", "Closed");
+                d.addOption("none", "None");
+                d.setValue(this.collapseType);
+                d.onChange((v: "open" | "closed" | "none") => {
+                    this.collapseType = v;
+                });
+            });
+        
 
         const input = createEl("input", {
             attr: {

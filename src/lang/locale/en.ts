@@ -55,6 +55,9 @@ export default {
     "Show Copy Button": "Show Copy Button",
     "A copy button will be added to the admonition.":
         "A copy button will be added to the admonition.",
+    "Default Collapsible": "Default Collapsible",
+    "This will be the default collapsible state for this admonition type.":
+        "This will be the default collapsible state for this admonition type.",
     "Parse Titles as Markdown": "Parse Titles as Markdown",
     "Admonition Titles will be rendered as markdown.":
         "Admonition Titles will be rendered as markdown."

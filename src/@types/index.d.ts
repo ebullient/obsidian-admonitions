@@ -11,6 +11,7 @@ export interface Admonition {
     injectColor?: boolean;
     noTitle: boolean;
     copy?: boolean;
+    collapseType: "open" | "closed" | "none";
 }
 
 export interface NestedAdmonition {

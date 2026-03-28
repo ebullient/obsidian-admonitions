@@ -5,6 +5,8 @@ import {
     SearchComponent,
     Setting,
     TextComponent,
+    DropdownComponent,
+    ValueComponent,
     renderMatches,
     setIcon
 } from "obsidian";
@@ -117,6 +119,10 @@ export class InsertAdmonitionModal extends Modal {
                             this.type.slice(1).toLowerCase();
                     }
                     titleInput.setValue(this.title);
+                    if(this.plugin.admonitions[this.type].collapseType){
+                        this.collapse = this.plugin.admonitions[this.type].collapseType;
+                        collapseDropdown.setValue(this.collapse);
+                    }
                 } else {
                     new Notice("No admonition type by that name exists.");
                     t.inputEl.value = "";
@@ -172,9 +178,12 @@ export class InsertAdmonitionModal extends Modal {
                     }
                 });
             });
+        
+        let collapseDropdown: DropdownComponent;
 
         const collapseSetting = new Setting(contentEl);
         collapseSetting.setName("Make Collapsible").addDropdown((d) => {
+            collapseDropdown = d;
             d.addOption("open", "Open");
             d.addOption("closed", "Closed");
             d.addOption("none", "None");
