@@ -155,7 +155,7 @@ export class InsertAdmonitionModal extends Modal {
                         const element = this.plugin.getAdmonitionElement(
                             this.type,
                             this.title,
-                            this.plugin.isStyledWithCss(admonition)
+                            this.plugin.isIconWithCss(admonition)
                                 ? {}
                                 : admonition.icon,
                             this.plugin.shouldInjectColor(admonition)
@@ -224,7 +224,7 @@ export class InsertAdmonitionModal extends Modal {
             this.element = this.plugin.getAdmonitionElement(
                 this.type,
                 this.title,
-                this.plugin.isStyledWithCss(admonition) ? {} : admonition.icon,
+                this.plugin.isIconWithCss(admonition) ? {} : admonition.icon,
                 this.plugin.shouldInjectColor(admonition)
                     ? admonition.color
                     : null,

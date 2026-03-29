@@ -139,10 +139,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     icon: modal.icon,
                                     command: false,
                                     title: modal.title,
-                                    styleWithCss: modal.styleWithCss,
-                                    injectColor: modal.styleWithCss
-                                        ? false
-                                        : undefined,
+                                    iconWithCss: modal.iconWithCss,
+                                    injectColor: modal.injectColor,
                                     noTitle: modal.noTitle,
                                     copy: modal.copy,
                                 };
@@ -895,7 +893,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 admonition.type,
                 admonition.type[0].toUpperCase() +
                     admonition.type.slice(1).toLowerCase(),
-                this.plugin.isStyledWithCss(admonition) ? {} : admonition.icon,
+                this.plugin.isIconWithCss(admonition) ? {} : admonition.icon,
                 this.plugin.shouldInjectColor(admonition)
                     ? admonition.color
                     : null,
@@ -943,10 +941,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                         icon: modal.icon,
                                         command: hasCommand,
                                         title: modal.title,
-                                        styleWithCss: modal.styleWithCss,
-                                        injectColor: modal.styleWithCss
-                                            ? false
-                                            : undefined,
+                                        iconWithCss: modal.iconWithCss,
+                                        injectColor: modal.injectColor,
                                         noTitle: modal.noTitle,
                                         copy: modal.copy,
                                     };
@@ -1016,7 +1012,8 @@ class SettingsModal extends Modal {
     saved = false;
     error = false;
     title: string;
-    styleWithCss = false;
+    iconWithCss = false;
+    injectColor: boolean = this.plugin.data.injectColor;
     noTitle = false;
     admonitionPreviewParent: HTMLElement;
     admonitionPreview: HTMLElement;
@@ -1035,7 +1032,8 @@ class SettingsModal extends Modal {
             this.type = admonition.type;
             this.originalType = admonition.type;
             this.title = admonition.title;
-            this.styleWithCss = this.plugin.isStyledWithCss(admonition);
+            this.iconWithCss = this.plugin.isIconWithCss(admonition);
+            this.injectColor = this.plugin.shouldInjectColor(admonition);
             this.noTitle = admonition.noTitle ?? false;
             this.copy = admonition.copy ?? this.plugin.data.copyButton;
         }
@@ -1046,10 +1044,8 @@ class SettingsModal extends Modal {
         this.admonitionPreview = this.plugin.getAdmonitionElement(
             this.type,
             title[0].toUpperCase() + title.slice(1).toLowerCase(),
-            this.styleWithCss ? {} : this.icon,
-            !this.styleWithCss && this.plugin.data.injectColor
-                ? this.color
-                : null,
+            this.iconWithCss ? {} : this.icon,
+            this.injectColor ? this.color : null,
         );
         this.admonitionPreview
             .createDiv("callout-content admonition-content")
@@ -1158,16 +1154,6 @@ class SettingsModal extends Modal {
             .addToggle((t) => {
                 t.setValue(this.copy).onChange((v) => (this.copy = v));
             });
-        new Setting(settingDiv)
-            .setName(t9n("style-with-css.name"))
-            .setDesc(t9n("style-with-css.desc"))
-            .addToggle((t) => {
-                t.setValue(this.styleWithCss).onChange((v) => {
-                    this.styleWithCss = v;
-                    this.display();
-                });
-            });
-
         const input = createEl("input", {
             attr: {
                 type: "file",
@@ -1181,11 +1167,11 @@ class SettingsModal extends Modal {
             .setDesc(t9n("admonition-icon.desc"))
             .addText((text) => {
                 iconText = text;
-                text.setDisabled(this.styleWithCss);
+                text.setDisabled(this.iconWithCss);
                 if (this.icon.type !== "image") text.setValue(this.icon.name);
 
                 const validate = async () => {
-                    if (this.styleWithCss) {
+                    if (this.iconWithCss) {
                         SettingsModal.removeValidationError(text.inputEl);
                         return;
                     }
@@ -1236,8 +1222,16 @@ class SettingsModal extends Modal {
                 b.setButtonText(t9n("btn.upload-image")).setIcon("image-file");
                 b.buttonEl.addClass("admonition-file-upload");
                 b.buttonEl.appendChild(input);
-                b.setDisabled(this.styleWithCss);
+                b.setDisabled(this.iconWithCss);
                 b.onClick(() => input.click());
+            })
+            .addToggle((t) => {
+                t.setTooltip(t9n("icon-with-css.name"))
+                    .setValue(!this.iconWithCss)
+                    .onChange((v) => {
+                        this.iconWithCss = !v;
+                        this.display();
+                    });
             });
 
         /** Image Uploader */
@@ -1303,7 +1297,7 @@ class SettingsModal extends Modal {
                     if (iconText.inputEl.value?.length) {
                         icon.name = iconText.inputEl.value;
                     }
-                    const valid = this.styleWithCss
+                    const valid = this.iconWithCss
                         ? AdmonitionValidator.validateType(
                               typeText.inputEl.value,
                               this.plugin,
@@ -1342,12 +1336,10 @@ class SettingsModal extends Modal {
     }
     createColor(el: HTMLDivElement) {
         el.empty();
-        const colorEnabled = !this.styleWithCss && this.plugin.data.injectColor;
-        const desc = this.styleWithCss
-            ? t9n("color.disabled-per-admonition")
-            : this.plugin.data.injectColor
-              ? t9n("color.enabled")
-              : t9n("color.disabled-global");
+        const colorEnabled = this.injectColor && this.plugin.data.injectColor;
+        const desc = !this.plugin.data.injectColor
+            ? t9n("color.disabled-global")
+            : t9n("color.enabled");
         new Setting(el)
             .setName(t9n("color.name"))
             .setDesc(desc)
@@ -1369,7 +1361,29 @@ class SettingsModal extends Modal {
                         );
                     }
                 });
-            });
+            })
+            .addToggle((t) =>
+                t
+                    .setValue(this.injectColor)
+                    .setTooltip(
+                        `${this.injectColor ? "Disable" : "Enable"} Admonition Color`,
+                    )
+                    .setDisabled(!this.plugin.data.injectColor)
+                    .onChange((v) => {
+                        this.injectColor = v;
+
+                        if (!v) {
+                            this.admonitionPreview.removeAttribute("style");
+                        } else {
+                            this.admonitionPreview.setAttribute(
+                                "style",
+                                `--callout-color: ${this.color};`,
+                            );
+                        }
+
+                        this.createColor(el);
+                    }),
+            );
     }
 
     onOpen() {

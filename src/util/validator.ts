@@ -32,8 +32,7 @@ export namespace AdmonitionValidator {
             success: true,
             messages: [],
         };
-        const styleWithCss =
-            admonition.styleWithCss ?? admonition.injectColor === false;
+        const iconWithCss = admonition.iconWithCss === true;
         const validType = AdmonitionValidator.validateType(
             admonition.type,
             plugin,
@@ -41,7 +40,7 @@ export namespace AdmonitionValidator {
         if (validType.success === false) {
             return validType;
         }
-        if (!styleWithCss) {
+        if (!iconWithCss) {
             const iconName =
                 typeof admonition.icon === "string"
                     ? admonition.icon
@@ -92,7 +91,7 @@ export namespace AdmonitionValidator {
         const booleans: (keyof Admonition)[] = [
             "command",
             "injectColor",
-            "styleWithCss",
+            "iconWithCss",
             "noTitle",
             "copy",
         ];

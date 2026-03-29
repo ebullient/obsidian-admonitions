@@ -8,7 +8,8 @@ This page centralizes icon behavior for code block admonitions and native callou
 2. Create a custom admonition type named `image-png`.
 3. Set its icon to `assets/red-square-16.png` and save.
 4. Create a second custom admonition type named `icon-css`.
-5. Enable `Style This Admonition with CSS` for `icon-css` and save.
+5. On the Admonition Icon row, disable the `Enable Admonition Icon` toggle for `icon-css` and save.
+   (This tells the plugin to skip icon CSS generation, leaving it to your CSS snippet.)
 6. Enable the snippet `.obsidian/snippets/ad-test-vault-icon-css.css`:
    1. `Settings` -> `Appearance` -> `CSS snippets`
    2. Turn on `ad-test-vault-icon-css`
@@ -25,7 +26,7 @@ This code block uses the `icon:` parameter.
 
 ## 2) Uploaded image icon behavior
 
-With the custom `image-png` type above:
+With the custom `image-png` type above (the `Enable Admonition Icon` toggle must be **on** — the plugin embeds the image as a data URI in its generated CSS):
 
 ```ad-image-png
 title: Code block with uploaded image icon
@@ -38,7 +39,8 @@ The red square icon from settings should render here.
 
 ## 3) CSS icon for both callout and codeblock
 
-With type `icon-css`, the snippet sets an SVG `--callout-icon` value (per Obsidian callout customization docs):
+With type `icon-css`, the `Enable Admonition Icon` toggle is **off** — the plugin generates no icon CSS for this type.
+The snippet instead sets an SVG `--callout-icon` value (per Obsidian callout customization docs):
 
 ```css
 .callout[data-callout="icon-css"] {

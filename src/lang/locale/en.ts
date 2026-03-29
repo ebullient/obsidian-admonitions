@@ -87,9 +87,7 @@ export default {
     "show-copy.name": "Show Copy Button",
     "show-copy.desc":
         "A copy button will be added to the admonition & callout.",
-    "style-with-css.name": "Style This Admonition with CSS",
-    "style-with-css.desc":
-        "Skip plugin-managed icon and color CSS for this type. Use your own CSS snippet for styling.",
+    "icon-with-css.name": "Enable Admonition Icon",
     "admonition-icon.name": "Admonition Icon",
     "admonition-icon.desc": "Icon to display next to the title.",
     "color.name": "Color",
@@ -97,7 +95,7 @@ export default {
     "color.disabled-global":
         "Color injection is disabled globally. Enable 'Set Admonition Colors' in plugin settings to use this.",
     "color.disabled-per-admonition":
-        "Plugin-managed styling is disabled for this admonition type. Style icon and color with CSS.",
+        "Color is disabled for this admonition type. Style color with CSS.",
 
     // --- Insert modal ---
     "modal.title.name": "Admonition Title",

@@ -136,20 +136,13 @@ export default class ObsidianAdmonition extends Plugin {
         });
     }
 
-    /**
-     * Legacy compatibility: injectColor=false historically meant "style color with CSS".
-     * In the new model, styleWithCss disables plugin-managed icon and color for this type.
-     */
-    isStyledWithCss(admonition: Admonition): boolean {
-        if (admonition.styleWithCss !== undefined) {
-            return admonition.styleWithCss;
-        }
-        return admonition.injectColor === false;
+    isIconWithCss(admonition: Admonition): boolean {
+        return admonition.iconWithCss === true;
     }
 
     shouldInjectColor(admonition: Admonition): boolean {
-        if (this.isStyledWithCss(admonition)) {
-            return false;
+        if (admonition.injectColor !== undefined) {
+            return admonition.injectColor;
         }
         return this.data.injectColor;
     }
@@ -338,7 +331,6 @@ ${editor.getDoc().getSelection()}
 
             /* const iconNode = icon ? this.admonitions[type].icon; */
             const admonition = this.admonitions[type];
-            const styleWithCss = this.isStyledWithCss(admonition);
             const iconOverride = icon
                 ? this.iconManager.iconDefinitions.find(
                       ({ name }) => icon === name,
@@ -347,7 +339,8 @@ ${editor.getDoc().getSelection()}
             const admonitionElement = this.getAdmonitionElement(
                 type,
                 title,
-                iconOverride ?? (styleWithCss ? {} : admonition.icon),
+                iconOverride ??
+                    (this.isIconWithCss(admonition) ? {} : admonition.icon),
                 color ??
                     (this.shouldInjectColor(admonition)
                         ? admonition.color
@@ -827,11 +820,10 @@ ${editor.getDoc().getSelection()}
 
             for (const key of Object.keys(this.data.userAdmonitions)) {
                 const admonition = this.data.userAdmonitions[key];
-                if (
-                    admonition.styleWithCss === undefined &&
-                    admonition.injectColor === false
-                ) {
-                    admonition.styleWithCss = true;
+                if (admonition.styleWithCss === true) {
+                    admonition.iconWithCss = true;
+                    admonition.injectColor = false;
+                    delete admonition.styleWithCss;
                 }
             }
         }

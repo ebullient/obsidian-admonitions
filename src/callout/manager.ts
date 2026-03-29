@@ -219,7 +219,7 @@ export default class CalloutManager extends Component {
             this.indexing.splice(existingIndex, 1);
         }
 
-        if (this.plugin.isStyledWithCss(admonition)) {
+        if (this.plugin.isIconWithCss(admonition)) {
             this.updateSnippet();
             return;
         }
