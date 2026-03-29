@@ -212,21 +212,35 @@ export default class CalloutManager extends Component {
         return sheet.join("\n\n");
     }
     addAdmonition(admonition: Admonition) {
-        if (!admonition.icon) return;
+        const type = admonition.type.toLowerCase();
+        if (this.indexing.contains(type)) {
+            const existingIndex = this.indexing.indexOf(type);
+            this.sheet.deleteRule(existingIndex);
+            this.indexing.splice(existingIndex, 1);
+        }
+
+        if (this.plugin.isStyledWithCss(admonition)) {
+            this.updateSnippet();
+            return;
+        }
+
+        if (!admonition.icon) {
+            this.updateSnippet();
+            return;
+        }
         let rule: string;
-        const color =
-            (admonition.injectColor ?? this.plugin.data.injectColor)
-                ? `--callout-color: ${admonition.color};`
-                : "";
+        const color = this.plugin.shouldInjectColor(admonition)
+            ? `--callout-color: ${admonition.color};`
+            : "";
         if (admonition.icon.type === "obsidian") {
-            rule = `.callout[data-callout="${admonition.type.toLowerCase()}"] {
+            rule = `.callout[data-callout="${type}"] {
     ${color}
     --callout-icon: ${
         admonition.icon.name
     };  /* Icon name from the Obsidian Icon Set */
 }`;
         } else {
-            rule = `.callout[data-callout="${admonition.type.toLowerCase()}"] {
+            rule = `.callout[data-callout="${type}"] {
        ${color}
         --callout-icon: "${(
             this.plugin.iconManager.getIconNode(admonition.icon)?.outerHTML ??
@@ -236,13 +250,7 @@ export default class CalloutManager extends Component {
             .replace(/"/g, '\\"')}";
     }`;
         }
-        if (this.indexing.contains(admonition.type)) {
-            this.sheet.deleteRule(this.indexing.indexOf(admonition.type));
-        }
-        this.indexing = [
-            ...this.indexing.filter((type) => type !== admonition.type),
-            admonition.type,
-        ];
+        this.indexing = [...this.indexing.filter((t) => t !== type), type];
         this.sheet.insertRule(rule, this.sheet.cssRules.length);
         this.updateSnippet();
     }

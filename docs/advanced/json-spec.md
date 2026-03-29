@@ -22,8 +22,12 @@ interface Admonition {
     // Whether to register Command Palette commands for this type.
     command: boolean;
 
-    // Whether the plugin injects the color via a CSS variable.
-    // Set to false if you are controlling the color entirely via CSS.
+    // If true, this admonition is styled entirely via CSS.
+    // The plugin will not auto-generate icon/color CSS for this type.
+    styleWithCss?: boolean;
+
+    // Deprecated legacy field (color-only override).
+    // Old imports using injectColor:false are migrated to styleWithCss:true.
     injectColor?: boolean;
 
     // If true, the title bar is hidden by default unless title: is explicitly set.
@@ -81,7 +85,7 @@ Only `type` is required. Omitting `icon` and `color` assigns defaults.
         },
         "color": "200, 50, 50",
         "command": false,
-        "injectColor": true,
+        "styleWithCss": false,
         "noTitle": false,
         "copy": false
     }

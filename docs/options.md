@@ -70,7 +70,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 To create a collapsible admonition, add the `collapse` parameter. Valid values:
 
 | Value | Behavior |
-|-------|----------|
+| ----- | -------- |
 | `open` | Renders open; can be collapsed by clicking the title |
 | `closed` | Renders collapsed; can be expanded by clicking the title |
 | `none` | Forces the admonition to be non-collapsible, even if "Collapsible By Default" is enabled in settings |
@@ -86,9 +86,7 @@ You can set all admonitions to be collapsible by default in the [settings](setti
 
 ### Icon
 
-To change the default icon of an admonition, you can use the `icon` parameter.
-
-Please note that the icon name you provide must be the exact name of an icon from either **FontAwesome** or **RPGAwesome**, otherwise it will not work.
+To override the icon for a single codeblock, use the `icon` parameter. The name must exactly match an icon from an enabled icon pack (FontAwesome, Octicons, or RPG Awesome — configure which are active under Settings → Icon Packs).
 
 ````md
 ```ad-note
@@ -98,9 +96,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 ```
 ````
 
+> [!NOTE]
+> Image icons (PNG, etc.) configured in the admonition settings only work in codeblock mode, not in callout syntax (`> [!type]`). If you need consistent icon styling across both, use the **Style with CSS** option and define `--callout-icon` in a CSS snippet.
+
 ### Color
 
-To change the color of an admonition, you can use the `color` parameter followed by an RGB triad value. The RGB triad should be entered as three integers separated by commas, each between 0 and 255.
+To override the color for a single codeblock, use the `color` parameter with an RGB triad — three integers (0–255) separated by commas.
 
 **For example**: `color: 255, 0, 0` sets the color to red, and `color: 0, 128, 0` sets the color to green.
 
@@ -111,6 +112,9 @@ color: 200, 200, 200
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et euismod nulla.
 ```
 ````
+
+> [!NOTE]
+> The `color` parameter has no effect when **Set Admonition Colors** is disabled in plugin settings, or when the admonition type has **Style with CSS** enabled. In those cases, color is controlled entirely by CSS.
 
 ### Metadata
 

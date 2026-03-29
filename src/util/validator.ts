@@ -32,6 +32,8 @@ export namespace AdmonitionValidator {
             success: true,
             messages: [],
         };
+        const styleWithCss =
+            admonition.styleWithCss ?? admonition.injectColor === false;
         const validType = AdmonitionValidator.validateType(
             admonition.type,
             plugin,
@@ -39,24 +41,29 @@ export namespace AdmonitionValidator {
         if (validType.success === false) {
             return validType;
         }
-        const iconName =
-            typeof admonition.icon === "string"
-                ? admonition.icon
-                : typeof admonition.icon === "object"
-                  ? admonition.icon?.name
-                  : null;
-        const validIcon = AdmonitionValidator.validateType(iconName, plugin);
-        if (validIcon.success === false) {
-            return validIcon;
-        }
-
-        const iconNode = plugin.iconManager.getIconNode(admonition.icon);
-        if (!iconNode) {
-            result.messages.push(
-                "No installed icon found by the name " +
-                    iconName +
-                    ". Perhaps you need to install a new icon pack?",
+        if (!styleWithCss) {
+            const iconName =
+                typeof admonition.icon === "string"
+                    ? admonition.icon
+                    : typeof admonition.icon === "object"
+                      ? admonition.icon?.name
+                      : null;
+            const validIcon = AdmonitionValidator.validateType(
+                iconName,
+                plugin,
             );
+            if (validIcon.success === false) {
+                return validIcon;
+            }
+
+            const iconNode = plugin.iconManager.getIconNode(admonition.icon);
+            if (!iconNode) {
+                result.messages.push(
+                    "No installed icon found by the name " +
+                        iconName +
+                        ". Perhaps you need to install a new icon pack?",
+                );
+            }
         }
         if (admonition.title && typeof admonition.title !== "string") {
             return {
@@ -85,6 +92,7 @@ export namespace AdmonitionValidator {
         const booleans: (keyof Admonition)[] = [
             "command",
             "injectColor",
+            "styleWithCss",
             "noTitle",
             "copy",
         ];

@@ -8,6 +8,10 @@ export interface Admonition {
     icon: AdmonitionIconDefinition;
     color: string;
     command: boolean;
+    styleWithCss?: boolean;
+    /**
+     * @deprecated Legacy per-admonition color override. Use styleWithCss instead.
+     */
     injectColor?: boolean;
     noTitle: boolean;
     copy?: boolean;

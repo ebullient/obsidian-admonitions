@@ -23,8 +23,8 @@ await plugin.addAdmonition({
     icon: { type: "font-awesome", name: "star" },
     color: "200, 50, 50",
     command: false,
+    styleWithCss: false,
     noTitle: false,
-    injectColor: true,
     copy: false,
 });
 ```
@@ -102,6 +102,8 @@ interface Admonition {
     icon: AdmonitionIconDefinition;
     color: string;
     command: boolean;
+    styleWithCss?: boolean;
+    /** @deprecated Use styleWithCss instead. */
     injectColor?: boolean;
     noTitle: boolean;
     copy?: boolean;

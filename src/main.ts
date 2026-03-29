@@ -136,6 +136,24 @@ export default class ObsidianAdmonition extends Plugin {
         });
     }
 
+    /**
+     * Legacy compatibility: injectColor=false historically meant "style color with CSS".
+     * In the new model, styleWithCss disables plugin-managed icon and color for this type.
+     */
+    isStyledWithCss(admonition: Admonition): boolean {
+        if (admonition.styleWithCss !== undefined) {
+            return admonition.styleWithCss;
+        }
+        return admonition.injectColor === false;
+    }
+
+    shouldInjectColor(admonition: Admonition): boolean {
+        if (this.isStyledWithCss(admonition)) {
+            return false;
+        }
+        return this.data.injectColor;
+    }
+
     async onload(): Promise<void> {
         console.log("Obsidian Admonition loaded");
 
@@ -320,14 +338,18 @@ ${editor.getDoc().getSelection()}
 
             /* const iconNode = icon ? this.admonitions[type].icon; */
             const admonition = this.admonitions[type];
+            const styleWithCss = this.isStyledWithCss(admonition);
+            const iconOverride = icon
+                ? this.iconManager.iconDefinitions.find(
+                      ({ name }) => icon === name,
+                  )
+                : null;
             const admonitionElement = this.getAdmonitionElement(
                 type,
                 title,
-                this.iconManager.iconDefinitions.find(
-                    ({ name }) => icon === name,
-                ) ?? admonition.icon,
+                iconOverride ?? (styleWithCss ? {} : admonition.icon),
                 color ??
-                    ((admonition.injectColor ?? this.data.injectColor)
+                    (this.shouldInjectColor(admonition)
                         ? admonition.color
                         : null),
                 collapse,
@@ -801,6 +823,16 @@ ${editor.getDoc().getSelection()}
                     }),
                     0,
                 );
+            }
+
+            for (const key of Object.keys(this.data.userAdmonitions)) {
+                const admonition = this.data.userAdmonitions[key];
+                if (
+                    admonition.styleWithCss === undefined &&
+                    admonition.injectColor === false
+                ) {
+                    admonition.styleWithCss = true;
+                }
             }
         }
 
