@@ -6,10 +6,8 @@ import {
     Platform,
     PluginSettingTab,
     Setting,
-    setIcon,
     TextAreaComponent,
     type TextComponent,
-    type TFile,
 } from "obsidian";
 import { t9n } from "src/lang/helpers";
 import type {
@@ -23,12 +21,7 @@ import type ObsidianAdmonition from "./main";
 import { IconSuggestionModal } from "./modal";
 import { confirmWithModal } from "./modal/confirm";
 import Export from "./modal/export";
-import {
-    ADD_COMMAND_NAME,
-    REMOVE_COMMAND_NAME,
-    SPIN_ICON_NAME,
-    WARNING_ICON_NAME,
-} from "./util";
+import { ADD_COMMAND_NAME, REMOVE_COMMAND_NAME } from "./util";
 import { AdmonitionValidator } from "./util/validator";
 
 export default class AdmonitionSetting extends PluginSettingTab {
@@ -143,7 +136,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     noTitle: modal.noTitle,
                                     copy: modal.copy,
                                 };
-                                this.plugin.addAdmonition(admonition);
+                                await this.plugin.addAdmonition(admonition);
 
                                 this.plugin.calloutManager.addAdmonition(
                                     admonition,
@@ -280,7 +273,6 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
         this.buildAdmonitions(this.containerEl.createDiv());
         this.buildIcons(this.containerEl.createDiv());
-        this.buildOtherSyntaxes(this.containerEl.createDiv());
         this.buildAdvanced(this.containerEl.createDiv());
 
         const div = this.containerEl.createDiv("coffee");
@@ -468,7 +460,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     .onClick(async () => {
                         if (!selected?.length) return;
 
-                        await this.plugin.iconManager.downloadIcon(selected);
+                        await this.plugin.downloadIcon(selected);
                         this.buildIcons(containerEl);
                     });
                 if (!possibilities.length) b.setDisabled(true);
@@ -482,8 +474,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     b.setIcon("reset")
                         .setTooltip(t9n("btn.redownload"))
                         .onClick(async () => {
-                            await this.plugin.iconManager.removeIcon(icon);
-                            await this.plugin.iconManager.downloadIcon(icon);
+                            await this.plugin.removeIcon(icon);
+                            await this.plugin.downloadIcon(icon);
                             this.buildIcons(containerEl);
                         });
                 })
@@ -505,248 +497,13 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                 return;
                         }
 
-                        await this.plugin.iconManager.removeIcon(icon);
-
+                        await this.plugin.removeIcon(icon);
                         this.buildIcons(containerEl);
                     });
                 });
         }
     }
 
-    buildOtherSyntaxes(containerEl: HTMLElement) {
-        containerEl.empty();
-        const others = new Setting(containerEl)
-            .setHeading()
-            .setName(t9n("heading.additional-syntaxes"));
-
-        const info = others.descEl;
-        info.createEl("p", {
-            text: "Obsidian 0.14 has introduced callout boxes to its core functionality using the same syntax as the Microsoft Document callouts.",
-        });
-        info.createEl("p", {
-            text: "This has rendered the Microsoft Document syntax for admonitions obsolete, but admonitions can still be used to create and manage your custom callout types.",
-        });
-        info.createEl("p", {
-            text: "Code block admonitions will continue to work!",
-        });
-
-        if (!this.plugin.data.msDocConverted) {
-            new Setting(containerEl)
-                .setName(t9n("convert-msdoc.name"))
-                .setDesc(
-                    createFragment((e) => {
-                        const text = e.createDiv("admonition-convert");
-                        setIcon(text.createSpan(), WARNING_ICON_NAME);
-                        text.createSpan({
-                            text: t9n("convert-msdoc.desc-warning"),
-                        });
-                        text.createEl("strong", {
-                            text: t9n("convert-msdoc.desc-warning-bold"),
-                        });
-                        text.createSpan({
-                            text: t9n("convert-msdoc.desc-warning-suffix"),
-                        });
-                        e.createEl("p", {
-                            text: t9n("convert-msdoc.desc-note"),
-                        });
-                    }),
-                )
-                .addButton((b) =>
-                    b
-                        .setButtonText(t9n("btn.convert"))
-                        .setCta()
-                        .onClick(() => {
-                            this.queue =
-                                this.plugin.app.vault.getMarkdownFiles();
-                            this.notice = new Notice(
-                                createFragment((e) => {
-                                    const container =
-                                        e.createDiv("admonition-convert");
-                                    container.createSpan({
-                                        text: t9n("convert-msdoc.progress"),
-                                    });
-                                    setIcon(
-                                        container.createSpan(
-                                            "admonition-convert-icon",
-                                        ),
-                                        SPIN_ICON_NAME,
-                                    );
-                                }),
-                                0,
-                            );
-                            this.checkAndReplace();
-                        }),
-                );
-        }
-        new Setting(containerEl)
-            .setName(t9n("convert-codeblock.name"))
-            .setDesc(
-                createFragment((e) => {
-                    const text = e.createDiv("admonition-convert");
-                    setIcon(text.createSpan(), WARNING_ICON_NAME);
-                    text.createSpan({
-                        text: t9n("convert-msdoc.desc-warning"),
-                    });
-                    text.createEl("strong", {
-                        text: t9n("convert-msdoc.desc-warning-bold"),
-                    });
-                    text.createSpan({
-                        text: t9n("convert-msdoc.desc-warning-suffix"),
-                    });
-                    e.createEl("p", {
-                        text: t9n("convert-msdoc.desc-note"),
-                    });
-                }),
-            )
-            .addButton((b) =>
-                b
-                    .setButtonText(t9n("btn.convert"))
-                    .setCta()
-                    .onClick(() => {
-                        this.queue = this.plugin.app.vault.getMarkdownFiles();
-                        /* this.queue = [
-                            this.plugin.app.vault.getAbstractFileByPath(
-                                "99 Plugin Testing/admonition/Admonition Codeblock.md"
-                            ) as TFile
-                        ]; */
-                        this.notice = new Notice(
-                            createFragment((e) => {
-                                const container =
-                                    e.createDiv("admonition-convert");
-                                container.createSpan({
-                                    text: t9n("convert-codeblock.progress"),
-                                });
-                                setIcon(
-                                    container.createSpan(
-                                        "admonition-convert-icon",
-                                    ),
-                                    SPIN_ICON_NAME,
-                                );
-                            }),
-                            0,
-                        );
-                        this.converted = 0;
-                        this.checkAndReplaceCodeBlocks();
-                    }),
-            );
-    }
-    queue: TFile[] = [];
-    converted = 0;
-    async checkAndReplace() {
-        if (!this.queue.length) {
-            if (this.converted) {
-                this.notice.setMessage(
-                    `${this.converted} MS-doc Admonitions converted!`,
-                );
-            } else {
-                this.notice.setMessage(
-                    "No MS-doc Admonitions found to convert.",
-                );
-            }
-            this.plugin.data.msDocConverted = true;
-            this.plugin.saveSettings().then(() => this.display());
-
-            setTimeout(() => {
-                this.notice.hide();
-                this.notice = undefined;
-            }, 2000);
-            return;
-        }
-        setTimeout(async () => {
-            const file = this.queue.shift();
-            const contents = await this.app.vault.read(file);
-            if (/> \[!([^ :]+)(?::[ ]?(.+))\](x|\+|-)?/.test(contents)) {
-                this.converted++;
-                await this.plugin.app.vault.modify(
-                    file,
-                    contents.replace(
-                        /> \[!([^ :]+)(?::[ ]?(.+))\](x|\+|-)?/g,
-                        "> [!$1]$3 $2",
-                    ),
-                );
-            }
-            this.checkAndReplace();
-        });
-    }
-    async checkAndReplaceCodeBlocks() {
-        if (!this.queue.length) {
-            if (this.converted) {
-                this.notice.setMessage(
-                    `${this.converted} Codeblock Admonitions converted!`,
-                );
-            } else {
-                this.notice.setMessage(
-                    "No Codeblock Admonitions found to convert.",
-                );
-            }
-            this.display();
-            setTimeout(() => {
-                this.notice.hide();
-                this.notice = undefined;
-            }, 2000);
-            return;
-        }
-        setTimeout(async () => {
-            const file = this.queue.shift();
-            let contents = await this.app.vault.read(file);
-
-            if (/^(`{3,})ad-(\w+)([\s\S]*?)?\n^\1/m.test(contents)) {
-                contents = this.replaceCodeBlockInPlace(contents);
-                this.app.vault.modify(file, contents);
-            }
-            this.checkAndReplaceCodeBlocks();
-        });
-    }
-    replaceCodeBlockInPlace(contents: string): string {
-        let result = contents;
-        const admonitions =
-            result.match(/^(`{3,})ad-(\w+)([\s\S]*?)?\n^\1/gm) ?? [];
-
-        for (const admonition of admonitions) {
-            const [, type] = admonition.match(/^`{3,}ad-(\w+)/);
-            let title = "";
-            let collapse = "";
-            if (!type) continue;
-            const content = [];
-
-            let mine = true;
-            for (const line of admonition.split("\n").slice(1, -1)) {
-                if (mine) {
-                    if (/^title:/.test(line)) {
-                        title =
-                            line.match(/^title:(.*)/)?.[1].trim() ??
-                            type[0].toUpperCase() + type.slice(1).toLowerCase();
-                        continue;
-                    }
-                    if (/^collapse:/.test(line)) {
-                        const state =
-                            line.match(/^collapse:\s?(.*)/)?.[1].trim() ??
-                            "open";
-                        collapse = state === "open" ? "+" : "-";
-                        continue;
-                    }
-                    if (!/^(title|collapse|color|icon):/.test(line)) {
-                        mine = false;
-                    }
-                }
-                content.push(line);
-            }
-
-            let parsed = content.join("\n");
-            if (/^(`{3,})ad-(\w+)([\s\S]*?)?\n^\1/m.test(parsed)) {
-                parsed = this.replaceCodeBlockInPlace(parsed);
-            }
-            result = result.replace(
-                admonition,
-                `> [!${type}]${collapse}${
-                    title.length ? " " : ""
-                }${title}\n> ${parsed.split("\n").join("\n> ")}`,
-            );
-
-            this.converted++;
-        }
-        return result;
-    }
     buildAdvanced(containerEl: HTMLElement) {
         containerEl.empty();
         new Setting(containerEl).setHeading().setName(t9n("heading.advanced"));
@@ -766,61 +523,6 @@ export default class AdmonitionSetting extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 });
             });
-
-        // new Setting(containerEl)
-        //     .setName("Generate JS for Publish")
-        //     .setDesc(
-        //         createFragment((f) => {
-        //             f.createSpan({
-        //                 text: "Generate a javascript file to place in your "
-        //             });
-        //             f.createEl("code", { text: "publish.js" });
-        //             f.createSpan({ text: "file." });
-        //             f.createEl("br");
-        //             f.createEl("strong", {
-        //                 text: "Please note that this can only be done on custom domain publish sites."
-        //             });
-        //         })
-        //     )
-        // .addButton((b) => {
-        //     b.setButtonText("Generate");
-        //     b.onClick((evt) => {
-        //         const admonition_icons: {
-        //             [admonition_type: string]: {
-        //                 icon: string;
-        //                 color: string;
-        //             };
-        //         } = {};
-        //
-        //         for (let key in this.plugin.admonitions) {
-        //             const value = this.plugin.admonitions[key];
-        //
-        //             admonition_icons[key] = {
-        //                 icon:
-        //                     this.plugin.iconManager.getIconNode(value.icon)
-        //                         ?.outerHTML ?? "",
-        //                 color: value.color
-        //             };
-        //         }
-        //
-        //         const js = CONTENT.replace(
-        //             /ADMONITION_ICON_MAP\s?=\s?\{\}/,
-        //             "ADMONITION_ICON_MAP=" +
-        //                 JSON.stringify(admonition_icons)
-        //         );
-        //         const file = new Blob([js], {
-        //             type: "text/javascript"
-        //         });
-        //         const link = createEl("a", {
-        //             href: URL.createObjectURL(file),
-        //             attr: {
-        //                 download: "publish.admonition.js"
-        //             }
-        //         });
-        //         link.click();
-        //         link.detach();
-        //     });
-        // });
     }
 
     buildTypes() {
@@ -873,7 +575,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                 admonition,
                             );
 
-                            modal.onClose = async () => {
+                            modal.onClose = () => {
                                 if (modal.saved) {
                                     const hasCommand = admonition.command;
                                     const modalAdmonition = {

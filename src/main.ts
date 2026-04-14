@@ -1,4 +1,3 @@
-import type codemirror from "codemirror";
 import {
     addIcon,
     editorLivePreviewField,
@@ -30,25 +29,8 @@ import {
     WARNING_ICON_NAME,
 } from "./util";
 
-declare global {
-    interface Window {
-        CodeMirror: typeof codemirror;
-    }
-}
-
-//add commands to app interface
-
 declare module "obsidian" {
     interface App {
-        commands: {
-            commands: { [id: string]: Command };
-            editorCommands: { [id: string]: Command };
-            findCommand(id: string): Command;
-            executeCommandById(id: string): void;
-            listCommands(): Command[];
-            executeCommandById(id: string): void;
-            findCommand(id: string): Command;
-        };
         customCss: {
             getSnippetPath(file: string): string;
             readSnippets(): void;
@@ -75,14 +57,10 @@ declare module "obsidian" {
             dispatch: (tr: TransactionSpec) => void;
         };
     }
-    interface Workspace {
-        iterateCodeMirrors(callback: (cm: CodeMirror.Editor) => void): void;
-    }
 }
 
 import type { EditorState, TransactionSpec } from "@codemirror/state";
 import type { IconName } from "@fortawesome/fontawesome-svg-core";
-import type CodeMirror from "codemirror";
 import CalloutManager from "./callout/manager";
 import { type DownloadableIconPack, IconManager } from "./icons/manager";
 import { InsertAdmonitionModal } from "./modal";
@@ -103,7 +81,6 @@ const DEFAULT_APP_SETTINGS: AdmonitionSettings = {
     icons: [],
     useFontAwesome: true,
     rpgDownloadedOnce: false,
-    msDocConverted: false,
     useSnippet: false,
     snippetPath: `custom-admonitions.${[...Array(6).keys()]
         .map(() => ((16 * Math.random()) | 0).toString(16))
@@ -148,7 +125,7 @@ export default class ObsidianAdmonition extends Plugin {
 
         await this.loadSettings();
         await this.iconManager.load();
-        this.app.workspace.onLayoutReady(async () => {
+        this.app.workspace.onLayoutReady(() => {
             this.calloutManager = new CalloutManager(this);
             this.addChild(this.calloutManager);
 
@@ -236,11 +213,11 @@ export default class ObsidianAdmonition extends Plugin {
                         if (suggestor.collapse !== "default") {
                             collapseLine = `collapse: ${suggestor.collapse}\n`;
                         }
-                        editor.getDoc().replaceSelection(
+                        editor.replaceSelection(
                             `\`\`\`ad-${
                                 suggestor.type
                             }\n${titleLine}${collapseLine}
-${editor.getDoc().getSelection()}
+${editor.getSelection()}
 \`\`\`\n`,
                         );
                         const cursor = editor.getCursor();
@@ -278,8 +255,8 @@ ${editor.getDoc().getSelection()}
                         ) {
                             title = ` ${suggestor.title}`;
                         }
-                        const selection = editor.getDoc().getSelection();
-                        editor.getDoc().replaceSelection(
+                        const selection = editor.getSelection();
+                        editor.replaceSelection(
                             `> [!${suggestor.type}]${collapse}${title}
 > ${selection.split("\n").join("\n> ")}
 `,
@@ -291,11 +268,11 @@ ${editor.getDoc().getSelection()}
         });
     }
     async downloadIcon(pack: DownloadableIconPack) {
-        this.iconManager.downloadIcon(pack);
+        await this.iconManager.downloadIcon(pack);
     }
 
     async removeIcon(pack: DownloadableIconPack) {
-        this.iconManager.removeIcon(pack);
+        await this.iconManager.removeIcon(pack);
     }
 
     async postprocessor(
@@ -591,7 +568,7 @@ ${editor.getDoc().getSelection()}
             const copy = contentEl.createDiv("admonition-content-copy");
             setIcon(copy, "copy");
             copy.addEventListener("click", () => {
-                navigator.clipboard.writeText(content.trim()).then(async () => {
+                navigator.clipboard.writeText(content.trim()).then(() => {
                     new Notice("Admonition content copied to clipboard.");
                 });
             });
@@ -649,8 +626,8 @@ ${editor.getDoc().getSelection()}
                 if (checking) return admonition.command;
                 if (admonition.command) {
                     try {
-                        const selection = editor.getDoc().getSelection();
-                        editor.getDoc().replaceSelection(
+                        const selection = editor.getSelection();
+                        editor.replaceSelection(
                             `> [!${admonition.type}]
 > ${selection.split("\n").join("\n> ")}
 `,
@@ -672,10 +649,10 @@ ${editor.getDoc().getSelection()}
                 if (checking) return admonition.command;
                 if (admonition.command) {
                     try {
-                        editor.getDoc().replaceSelection(
+                        editor.replaceSelection(
                             `\`\`\`ad-${admonition.type}
 
-${editor.getDoc().getSelection()}
+${editor.getSelection()}
 
 \`\`\`\n`,
                         );
@@ -697,11 +674,11 @@ ${editor.getDoc().getSelection()}
                 if (admonition.command) {
                     try {
                         const title = admonition.title ?? "";
-                        editor.getDoc().replaceSelection(
+                        editor.replaceSelection(
                             `\`\`\`ad-${admonition.type}
 title: ${title}
 
-${editor.getDoc().getSelection()}
+${editor.getSelection()}
 
 \`\`\`\n`,
                         );
@@ -749,31 +726,19 @@ ${editor.getDoc().getSelection()}
     }
     unregisterCommandsFor(admonition: Admonition) {
         admonition.command = false;
-
-        if (
-            this.app.commands.findCommand(
-                `obsidian-admonition:insert-${admonition.type}`,
-            )
-        ) {
-            delete this.app.commands.editorCommands[
-                `obsidian-admonition:insert-${admonition.type}`
-            ];
-            delete this.app.commands.editorCommands[
-                `obsidian-admonition:insert-${admonition.type}-with-title`
-            ];
-            delete this.app.commands.commands[
-                `obsidian-admonition:insert-${admonition.type}`
-            ];
-            delete this.app.commands.commands[
-                `obsidian-admonition:insert-${admonition.type}-with-title`
-            ];
-        }
+        this.removeCommand(`insert-${admonition.type}-callout`);
+        this.removeCommand(`insert-${admonition.type}`);
+        this.removeCommand(`insert-${admonition.type}-with-title`);
     }
 
     async saveSettings() {
         this.data.version = this.manifest.version;
 
-        await this.saveData(this.data);
+        // Strip legacy fields that may exist in saved data from older versions
+        const dataToSave = { ...this.data } as Record<string, unknown>;
+        delete dataToSave.msDocConverted;
+
+        await this.saveData(dataToSave);
     }
     async loadSettings() {
         const loaded: AdmonitionSettings = await this.loadData();
@@ -843,43 +808,21 @@ ${editor.getDoc().getSelection()}
         await this.saveSettings();
     }
 
-    turnOnSyntaxHighlighting(types: string[] = Object.keys(this.admonitions)) {
-        if (!this.data.syntaxHighlight) return;
-        types.forEach((type) => {
-            if (this.data.syntaxHighlight) {
-                /** Process from @deathau's syntax highlight plugin */
-                const [, cmPatchedType] = `${type}`.match(
-                    /^([\w+#-]*)[^\n`]*$/,
-                );
-                window.CodeMirror.defineMode(
-                    `ad-${cmPatchedType}`,
-                    (_config, _options) => {
-                        return window.CodeMirror.getMode({}, "hypermd");
-                    },
-                );
-            }
-        });
-
-        this.app.workspace.onLayoutReady(() =>
-            this.app.workspace.iterateCodeMirrors((cm) =>
-                cm.setOption("mode", cm.getOption("mode")),
-            ),
-        );
+    // TODO: Implement syntax highlighting using the CodeMirror 6 extension API.
+    // The previous CodeMirror 5 implementation (window.CodeMirror.defineMode /
+    // workspace.iterateCodeMirrors) is no longer functional on modern Obsidian.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    turnOnSyntaxHighlighting(_types: string[] = Object.keys(this.admonitions)) {
+        // no-op until CM6 implementation is added
     }
-    turnOffSyntaxHighlighting(types: string[] = Object.keys(this.admonitions)) {
-        types.forEach((type) => {
-            if (Object.hasOwn(window.CodeMirror.modes, `ad-${type}`)) {
-                delete window.CodeMirror.modes[`ad-${type}`];
-            }
-        });
-        this.app.workspace.onLayoutReady(() =>
-            this.app.workspace.iterateCodeMirrors((cm) =>
-                cm.setOption("mode", cm.getOption("mode")),
-            ),
-        );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    turnOffSyntaxHighlighting(
+        _types: string[] = Object.keys(this.admonitions),
+    ) {
+        // no-op until CM6 implementation is added
     }
 
-    async onunload() {
+    onunload() {
         console.log("Obsidian Admonition unloaded");
         this.postprocessors = null;
         this.turnOffSyntaxHighlighting();

@@ -60,17 +60,6 @@ export default {
     "btn.load": "Load",
     "btn.redownload": "Redownload",
 
-    // --- Additional Syntaxes ---
-    "convert-msdoc.name": "Convert MSDoc Admonitions to Callouts",
-    "convert-msdoc.desc-warning": "This ",
-    "convert-msdoc.desc-warning-bold": "will",
-    "convert-msdoc.desc-warning-suffix":
-        " modify notes. Use at your own risk and please make backups.",
-    "convert-msdoc.desc-note": "With large vaults, this could take awhile!",
-    "convert-msdoc.progress": "Converting MS-doc admonitions...",
-    "convert-codeblock.name": "Convert Codeblock Admonitions to Callouts",
-    "convert-codeblock.progress": "Converting Codeblock admonitions...",
-
     // --- Advanced ---
     "markdown-highlight.name": "Markdown Syntax Highlighting",
     "markdown-highlight.desc":
