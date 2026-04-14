@@ -168,7 +168,7 @@ export default class ObsidianAdmonition extends Plugin {
             /** Add generic commands. */
             this.addCommand({
                 id: "collapse-admonitions",
-                name: "Collapse Admonitions in Note",
+                name: "Collapse admonitions",
                 checkCallback: (checking) => {
                     // checking if the command should appear in the Command Palette
                     if (checking) {
@@ -193,7 +193,7 @@ export default class ObsidianAdmonition extends Plugin {
             });
             this.addCommand({
                 id: "open-admonitions",
-                name: "Open Admonitions in Note",
+                name: "Open admonitions",
                 checkCallback: (checking) => {
                     // checking if the command should appear in the Command Palette
                     if (checking) {
@@ -219,7 +219,7 @@ export default class ObsidianAdmonition extends Plugin {
             });
             this.addCommand({
                 id: "insert-admonition",
-                name: "Insert Admonition",
+                name: "Insert admonition",
                 editorCallback: (editor, _view) => {
                     const suggestor = new InsertAdmonitionModal(this);
                     suggestor.onClose = () => {
@@ -251,7 +251,7 @@ ${editor.getDoc().getSelection()}
             });
             this.addCommand({
                 id: "insert-callout",
-                name: "Insert Callout",
+                name: "Insert callout",
                 editorCallback: (editor, _view) => {
                     const suggestor = new InsertAdmonitionModal(this);
                     suggestor.onClose = () => {
@@ -466,6 +466,8 @@ ${editor.getDoc().getSelection()}
                 );
             }
 
+            const renderer = new MarkdownRenderChild(titleEl);
+
             //get markdown
             const titleInnerEl = titleEl.createDiv(
                 "callout-title-inner admonition-title-content",
@@ -475,7 +477,7 @@ ${editor.getDoc().getSelection()}
                 title,
                 titleInnerEl,
                 source ?? "",
-                this,
+                renderer,
             );
             if (
                 titleInnerEl.firstElementChild &&
@@ -799,29 +801,6 @@ ${editor.getDoc().getSelection()}
                         },
                     };
                 }
-            }
-
-            if (
-                !this.data.version ||
-                Number(this.data.version.split(".")[0]) < 8
-            ) {
-                new Notice(
-                    createFragment((e) => {
-                        e.createSpan({
-                            text: "Admonitions: Obsidian now has native support for callouts! Check out the ",
-                        });
-
-                        e.createEl("a", {
-                            text: "Admonitions ReadMe",
-                            href: "obsidian://show-plugin?id=obsidian-admonition",
-                        });
-
-                        e.createSpan({
-                            text: " for what that means for Admonitions going forward.",
-                        });
-                    }),
-                    0,
-                );
             }
 
             for (const key of Object.keys(this.data.userAdmonitions)) {

@@ -353,8 +353,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 .setName(t9n("collapse-type.name"))
                 .setDesc(t9n("collapse-type.desc"))
                 .addDropdown((d) => {
-                    d.addOption("open", "open");
-                    d.addOption("closed", "closed");
+                    d.addOption("open", "Open");
+                    d.addOption("closed", "Closed");
                     d.setValue(this.plugin.data.defaultCollapseType);
                     d.onChange(async (v: "open" | "closed") => {
                         this.plugin.data.defaultCollapseType = v;
@@ -521,13 +521,13 @@ export default class AdmonitionSetting extends PluginSettingTab {
 
         const info = others.descEl;
         info.createEl("p", {
-            text: "Obsidian 0.14 has introduced Callout boxes to its core functionality using the same syntax as the Microsoft Document callouts.",
+            text: "Obsidian 0.14 has introduced callout boxes to its core functionality using the same syntax as the Microsoft Document callouts.",
         });
         info.createEl("p", {
-            text: "This has rendered the Microsoft Document syntax for Admonitions obsolete, but Admonitions can still be used to create and manage your custom callout types.",
+            text: "This has rendered the Microsoft Document syntax for admonitions obsolete, but admonitions can still be used to create and manage your custom callout types.",
         });
         info.createEl("p", {
-            text: "Your existing code block Admonitions will always work!",
+            text: "Code block admonitions will continue to work!",
         });
 
         if (!this.plugin.data.msDocConverted) {
