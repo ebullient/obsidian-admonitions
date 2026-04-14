@@ -15,7 +15,7 @@ export const SPIN_ICON_NAME = "admonition-spin";
 export const ADMONITION_MAP: Record<string, Admonition> = {
     note: {
         type: "note",
-        color: "68, 138, 255",
+        color: "rgb(68, 138, 255)",
         icon: {
             type: "font-awesome",
             name: "pencil-alt",
@@ -25,7 +25,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     seealso: {
         type: "note",
-        color: "68, 138, 255",
+        color: "rgb(68, 138, 255)",
         icon: {
             type: "font-awesome",
             name: "pencil-alt",
@@ -35,7 +35,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     abstract: {
         type: "abstract",
-        color: "0, 176, 255",
+        color: "rgb(0, 176, 255)",
         icon: {
             type: "font-awesome",
             name: "book",
@@ -45,7 +45,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     summary: {
         type: "abstract",
-        color: "0, 176, 255",
+        color: "rgb(0, 176, 255)",
         icon: {
             type: "font-awesome",
             name: "book",
@@ -55,7 +55,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     tldr: {
         type: "abstract",
-        color: "0, 176, 255",
+        color: "rgb(0, 176, 255)",
         icon: {
             type: "font-awesome",
             name: "book",
@@ -65,7 +65,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     info: {
         type: "info",
-        color: "0, 184, 212",
+        color: "rgb(0, 184, 212)",
         icon: {
             type: "font-awesome",
             name: "info-circle",
@@ -75,7 +75,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     todo: {
         type: "info",
-        color: "0, 184, 212",
+        color: "rgb(0, 184, 212)",
         icon: {
             type: "font-awesome",
             name: "info-circle",
@@ -85,7 +85,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     tip: {
         type: "tip",
-        color: "0, 191, 165",
+        color: "rgb(0, 191, 165)",
         icon: {
             type: "font-awesome",
             name: "fire",
@@ -95,7 +95,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     hint: {
         type: "tip",
-        color: "0, 191, 165",
+        color: "rgb(0, 191, 165)",
         icon: {
             type: "font-awesome",
             name: "fire",
@@ -105,7 +105,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     important: {
         type: "tip",
-        color: "0, 191, 165",
+        color: "rgb(0, 191, 165)",
         icon: {
             type: "font-awesome",
             name: "fire",
@@ -115,7 +115,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     success: {
         type: "success",
-        color: "0, 200, 83",
+        color: "rgb(0, 200, 83)",
         icon: {
             type: "font-awesome",
             name: "check-circle",
@@ -125,7 +125,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     check: {
         type: "success",
-        color: "0, 200, 83",
+        color: "rgb(0, 200, 83)",
         icon: {
             type: "font-awesome",
             name: "check-circle",
@@ -135,7 +135,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     done: {
         type: "success",
-        color: "0, 200, 83",
+        color: "rgb(0, 200, 83)",
         icon: {
             type: "font-awesome",
             name: "check-circle",
@@ -145,7 +145,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     question: {
         type: "question",
-        color: "100, 221, 23",
+        color: "rgb(100, 221, 23)",
         icon: {
             type: "font-awesome",
             name: "question-circle",
@@ -155,7 +155,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     help: {
         type: "question",
-        color: "100, 221, 23",
+        color: "rgb(100, 221, 23)",
         icon: {
             type: "font-awesome",
             name: "question-circle",
@@ -165,7 +165,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     faq: {
         type: "question",
-        color: "100, 221, 23",
+        color: "rgb(100, 221, 23)",
         icon: {
             type: "font-awesome",
             name: "question-circle",
@@ -175,7 +175,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     warning: {
         type: "warning",
-        color: "255, 145, 0",
+        color: "rgb(255, 145, 0)",
         icon: {
             type: "font-awesome",
             name: "exclamation-triangle",
@@ -185,7 +185,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     caution: {
         type: "warning",
-        color: "255, 145, 0",
+        color: "rgb(255, 145, 0)",
         icon: {
             type: "font-awesome",
             name: "exclamation-triangle",
@@ -195,7 +195,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     attention: {
         type: "warning",
-        color: "255, 145, 0",
+        color: "rgb(255, 145, 0)",
         icon: {
             type: "font-awesome",
             name: "exclamation-triangle",
@@ -205,7 +205,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     failure: {
         type: "failure",
-        color: "255, 82, 82",
+        color: "rgb(255, 82, 82)",
         icon: {
             type: "font-awesome",
             name: "times-circle",
@@ -215,7 +215,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     fail: {
         type: "failure",
-        color: "255, 82, 82",
+        color: "rgb(255, 82, 82)",
         icon: {
             type: "font-awesome",
             name: "times-circle",
@@ -225,7 +225,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     missing: {
         type: "failure",
-        color: "255, 82, 82",
+        color: "rgb(255, 82, 82)",
         icon: {
             type: "font-awesome",
             name: "times-circle",
@@ -235,7 +235,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     danger: {
         type: "danger",
-        color: "255, 23, 68",
+        color: "rgb(255, 23, 68)",
         icon: {
             type: "font-awesome",
             name: "bolt",
@@ -245,7 +245,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     error: {
         type: "danger",
-        color: "255, 23, 68",
+        color: "rgb(255, 23, 68)",
         icon: {
             type: "font-awesome",
             name: "bolt",
@@ -255,7 +255,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     bug: {
         type: "bug",
-        color: "245, 0, 87",
+        color: "rgb(245, 0, 87)",
         icon: {
             type: "font-awesome",
             name: "bug",
@@ -265,7 +265,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     example: {
         type: "example",
-        color: "124, 77, 255",
+        color: "rgb(124, 77, 255)",
         icon: {
             type: "font-awesome",
             name: "list-ol",
@@ -275,7 +275,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     quote: {
         type: "quote",
-        color: "158, 158, 158",
+        color: "rgb(158, 158, 158)",
         icon: {
             type: "font-awesome",
             name: "quote-right",
@@ -285,7 +285,7 @@ export const ADMONITION_MAP: Record<string, Admonition> = {
     },
     cite: {
         type: "quote",
-        color: "158, 158, 158",
+        color: "rgb(158, 158, 158)",
         icon: {
             type: "font-awesome",
             name: "quote-right",

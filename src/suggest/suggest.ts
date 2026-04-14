@@ -31,7 +31,7 @@ abstract class AdmonitionOrCalloutSuggester extends EditorSuggest<
         const iconDiv = el.createDiv("suggestion-aux").createDiv({
             cls: "suggestion-flair",
             attr: {
-                style: "color: rgb(var(--callout-color))",
+                style: "color: var(--callout-color)",
             },
         });
         let iconEl = this.plugin.iconManager.getIconNode(item.icon);

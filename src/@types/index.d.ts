@@ -8,10 +8,6 @@ export interface Admonition {
     command: boolean;
     iconWithCss?: boolean;
     injectColor?: boolean;
-    /**
-     * @deprecated Migrated to iconWithCss + injectColor=false on load.
-     */
-    styleWithCss?: boolean;
     noTitle: boolean;
     copy?: boolean;
 }

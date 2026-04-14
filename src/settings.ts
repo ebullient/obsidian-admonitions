@@ -997,7 +997,7 @@ class SettingsModal extends Modal {
                 t.setValue(rgbToHex(this.color)).onChange((v) => {
                     const color = hexToRgb(v);
                     if (!color) return;
-                    this.color = `${color.r}, ${color.g}, ${color.b}`;
+                    this.color = `rgb(${color.r}, ${color.g}, ${color.b})`;
                     if (colorEnabled) {
                         this.admonitionPreview.setAttribute(
                             "style",
@@ -1089,7 +1089,10 @@ function componentToHex(c: number) {
     return hex.length === 1 ? `0${hex}` : hex;
 }
 function rgbToHex(rgb: string) {
-    const result = /^(\d+),\s?(\d+),\s?(\d+)/i.exec(rgb);
+    // Handle both "rgb(r, g, b)" and legacy "r, g, b" formats
+    const result =
+        /rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/i.exec(rgb) ??
+        /^(\d+),\s?(\d+),\s?(\d+)/i.exec(rgb);
     if (!result?.length) {
         return "";
     }

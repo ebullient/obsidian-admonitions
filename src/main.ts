@@ -122,6 +122,7 @@ export default class ObsidianAdmonition extends Plugin {
 
         await this.loadSettings();
         await this.iconManager.load();
+
         this.app.workspace.onLayoutReady(() => {
             this.calloutManager = new CalloutManager(this);
             this.addChild(this.calloutManager);
@@ -193,7 +194,7 @@ export default class ObsidianAdmonition extends Plugin {
             });
             this.addCommand({
                 id: "insert-admonition",
-                name: "Insert",
+                name: "Insert code block",
                 editorCallback: (editor, _view) => {
                     const suggestor = new InsertAdmonitionModal(this);
                     suggestor.onClose = () => {
@@ -538,7 +539,7 @@ ${editor.getSelection()}
                 (!content.length || contentEl.textContent.trim() === "") &&
                 this.data.hideEmpty
             )
-                admonitionElement.addClass("no-content");
+            admonitionElement.addClass("no-content");
 
             const taskLists = contentEl.querySelectorAll<HTMLInputElement>(
                 ".task-list-item-checkbox",
@@ -778,12 +779,12 @@ ${editor.getSelection()}
 
             for (const key of Object.keys(this.data.userAdmonitions)) {
                 const admonition = this.data.userAdmonitions[key];
-                // eslint-disable-next-line @typescript-eslint/no-deprecated
-                if (admonition.styleWithCss === true) {
-                    admonition.iconWithCss = true;
-                    admonition.injectColor = false;
-                    // eslint-disable-next-line @typescript-eslint/no-deprecated
-                    delete admonition.styleWithCss;
+                // Migrate legacy RGB triplet colors ("r, g, b") to valid CSS rgb(r, g, b)
+                if (
+                    admonition.color &&
+                    /^\d+,\s*\d+,\s*\d+$/.test(admonition.color)
+                ) {
+                    admonition.color = `rgb(${admonition.color})`;
                 }
             }
         }
@@ -834,7 +835,7 @@ ${editor.getSelection()}
 
     onunload() {
         console.debug("Obsidian Admonition unloaded");
-        this.postprocessors = null;
+        this.postprocessors.clear();
         this.turnOffSyntaxHighlighting();
     }
 }

@@ -55,39 +55,21 @@ export function getParametersFromSource(
 
     let { title, collapse, icon, color, metadata } = params;
 
-    // If color is in RGB format
-    if (color?.startsWith("rgb")) {
-        color = color.slice(4, -1);
+    // If color is a legacy RGB triplet (e.g. "255, 0, 0"), wrap it
+    if (color && /^\d+,\s*\d+,\s*\d+$/.test(color)) {
+        color = `rgb(${color})`;
     }
 
-    // If color is in Hex format, convert it to RGB
-    if (color?.startsWith("#")) {
-        const hex = color.slice(1);
-        const bigint = Number.parseInt(hex, 16);
-        const r = (bigint >> 16) & 255;
-        const g = (bigint >> 8) & 255;
-        const b = bigint & 255;
-        color = `${r}, ${g}, ${b}`;
-    }
+    // rgb(...), hsl(...), and #hex are valid CSS — leave as-is
 
-    // If color is in HSL format, convert it to RGB
-    if (color?.startsWith("hsl")) {
-        const [h, s, l] = color
-            .slice(4, -1)
-            .split(",")
-            .map((str) => Number(str.replace("%", "").trim()));
-        const [r, g, b] = hslToRgb(h, s, l);
-        color = `${r}, ${g}, ${b}`;
-    }
-
-    // If color is in HSB format, convert it to RGB
+    // If color is in HSB format, convert it to rgb(...)
     if (color && (color.startsWith("hsb") || color.startsWith("hsv"))) {
         const [h, s, v] = color
             .slice(4, -1)
             .split(",")
             .map((str) => Number(str.replace("%", "").trim()));
         const [r, g, b] = hsbToRgb(h, s, v);
-        color = `${r}, ${g}, ${b}`;
+        color = `rgb(${r}, ${g}, ${b})`;
     }
 
     const content = lines.slice(skipLines).join("\n");
@@ -123,37 +105,6 @@ export function getParametersFromSource(
     }
 
     return { title, collapse, content, icon, color, metadata };
-}
-
-function hslToRgb(h: number, s: number, l: number) {
-    const hNorm = h / 360;
-    const sNorm = s / 100;
-    const lNorm = l / 100;
-    let r = 0;
-    let g = 0;
-    let b = 0;
-
-    if (sNorm === 0) {
-        r = lNorm;
-        g = lNorm;
-        b = lNorm; // achromatic
-    } else {
-        const hue2rgb = (p: number, q: number, t: number) => {
-            const tNorm = t < 0 ? t + 1 : t > 1 ? t - 1 : t;
-            if (tNorm < 1 / 6) return p + (q - p) * 6 * tNorm;
-            if (tNorm < 1 / 2) return q;
-            if (tNorm < 2 / 3) return p + (q - p) * (2 / 3 - tNorm) * 6;
-            return p;
-        };
-        const q =
-            lNorm < 0.5 ? lNorm * (1 + sNorm) : lNorm + sNorm - lNorm * sNorm;
-        const p = 2 * lNorm - q;
-        r = hue2rgb(p, q, hNorm + 1 / 3);
-        g = hue2rgb(p, q, hNorm);
-        b = hue2rgb(p, q, hNorm - 1 / 3);
-    }
-
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function hsbToRgb(h: number, s: number, b: number) {
