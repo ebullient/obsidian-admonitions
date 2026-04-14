@@ -22,6 +22,9 @@ generated/*
 *.map
 .claude/settings.local.json
 .claude/worktrees
+.claude/plans
+.opencode
+
 ad-test-vault/.obsidian/*
 !ad-test-vault/.obsidian/snippets/
 ad-test-vault/.obsidian/snippets/*
