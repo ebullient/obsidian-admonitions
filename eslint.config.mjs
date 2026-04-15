@@ -35,6 +35,8 @@ export default defineConfig([
                 ajaxPromise: "readonly",
                 activeWindow: "readonly",
                 activeDocument: "readonly",
+                // CodeMirror 5 is a global in the Obsidian environment
+                CodeMirror: "readonly",
             },
         },
         rules: {

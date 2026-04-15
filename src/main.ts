@@ -59,32 +59,13 @@ declare module "obsidian" {
     }
 }
 
-declare namespace CodeMirror {
-    interface Editor {
-        getOption(option: string): unknown;
-        setOption(option: string, value: unknown): void;
-    }
-    function defineMode(
-        name: string,
-        factory: (config: unknown, options: unknown) => unknown,
-    ): void;
-    function getMode(config: unknown, mode: string | { name: string }): unknown;
-    const modes: Record<string, unknown>;
-}
-
-declare global {
-    interface Window {
-        CodeMirror: typeof CodeMirror;
-    }
-}
-
 import type { EditorState, TransactionSpec } from "@codemirror/state";
 import type { IconName } from "@fortawesome/fontawesome-svg-core";
 import CalloutManager from "./callout/manager";
 import { type DownloadableIconPack, IconManager } from "./icons/manager";
 import { InsertAdmonitionModal } from "./modal";
 import AdmonitionSetting from "./settings";
-import { AdmonitionSuggest } from "./suggest/suggest";
+import { AdmonitionSuggest, CalloutSuggest } from "./suggest/suggest";
 
 const DEFAULT_APP_SETTINGS: AdmonitionSettings = {
     userAdmonitions: {},
@@ -150,6 +131,13 @@ export default class ObsidianAdmonition extends Plugin {
             this.addChild(this.calloutManager);
 
             this.registerEditorSuggest(new AdmonitionSuggest(this));
+            this.registerEditorSuggest(new CalloutSuggest(this));
+
+            this.registerMarkdownPostProcessor(
+                this.calloutManager.calloutProcessor.bind(
+                    this.calloutManager,
+                ) as MarkdownPostProcessor,
+            );
 
             Object.keys(this.admonitions).forEach((type) => {
                 this.registerType(type);

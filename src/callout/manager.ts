@@ -1,13 +1,11 @@
 import {
     Component,
-    type MarkdownPostProcessor,
     type MarkdownPostProcessorContext,
     Notice,
     setIcon,
 } from "obsidian";
 import type { Admonition } from "src/@types";
 import type ObsidianAdmonition from "src/main";
-import { CalloutSuggest } from "../suggest/suggest";
 
 type Heights = Partial<{
     height: string;
@@ -25,7 +23,6 @@ export default class CalloutManager extends Component {
 
     onload() {
         //build sheet for custom admonitions
-
         document.head.appendChild(this.style);
 
         for (const admonition of Object.values(
@@ -34,12 +31,6 @@ export default class CalloutManager extends Component {
             this.addAdmonition(admonition);
         }
         this.setUseSnippet();
-
-        this.plugin.registerEditorSuggest(new CalloutSuggest(this.plugin));
-
-        this.plugin.registerMarkdownPostProcessor(
-            this.calloutProcessor.bind(this) as MarkdownPostProcessor,
-        );
     }
     heights: Array<keyof Heights> = [
         "height",
