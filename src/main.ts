@@ -54,6 +54,28 @@ declare module "obsidian" {
             dispatch: (tr: TransactionSpec) => void;
         };
     }
+    interface Workspace {
+        iterateCodeMirrors(callback: (cm: CodeMirror.Editor) => void): void;
+    }
+}
+
+declare namespace CodeMirror {
+    interface Editor {
+        getOption(option: string): unknown;
+        setOption(option: string, value: unknown): void;
+    }
+    function defineMode(
+        name: string,
+        factory: (config: unknown, options: unknown) => unknown,
+    ): void;
+    function getMode(config: unknown, mode: string | { name: string }): unknown;
+    const modes: Record<string, unknown>;
+}
+
+declare global {
+    interface Window {
+        CodeMirror: typeof CodeMirror;
+    }
 }
 
 import type { EditorState, TransactionSpec } from "@codemirror/state";
@@ -538,8 +560,9 @@ ${editor.getSelection()}
             if (
                 (!content.length || contentEl.textContent.trim() === "") &&
                 this.data.hideEmpty
-            )
-            admonitionElement.addClass("no-content");
+            ) {
+                admonitionElement.addClass("no-content");
+            }
 
             const taskLists = contentEl.querySelectorAll<HTMLInputElement>(
                 ".task-list-item-checkbox",
@@ -821,16 +844,37 @@ ${editor.getSelection()}
         await this.saveSettings();
     }
 
-    // TODO: Implement syntax highlighting using the CodeMirror 6 extension API.
-    // The previous CodeMirror 5 implementation (window.CodeMirror.defineMode /
-    // workspace.iterateCodeMirrors) is no longer functional on modern Obsidian.
-    turnOnSyntaxHighlighting(_types: string[] = Object.keys(this.admonitions)) {
-        // no-op until CM6 implementation is added
+    turnOnSyntaxHighlighting(types: string[] = Object.keys(this.admonitions)) {
+        if (!this.data.syntaxHighlight) return;
+        types.forEach((type) => {
+            const match = `${type}`.match(/^([\w+#-]*)[^\n`]*$/);
+            if (!match) return;
+            const [, cmPatchedType] = match;
+            window.CodeMirror.defineMode(
+                `ad-${cmPatchedType}`,
+                (_config, _options) => {
+                    return window.CodeMirror.getMode({}, "hypermd");
+                },
+            );
+        });
+
+        this.app.workspace.onLayoutReady(() =>
+            this.app.workspace.iterateCodeMirrors((cm) =>
+                cm.setOption("mode", cm.getOption("mode")),
+            ),
+        );
     }
-    turnOffSyntaxHighlighting(
-        _types: string[] = Object.keys(this.admonitions),
-    ) {
-        // no-op until CM6 implementation is added
+    turnOffSyntaxHighlighting(types: string[] = Object.keys(this.admonitions)) {
+        types.forEach((type) => {
+            if (Object.hasOwn(window.CodeMirror.modes, `ad-${type}`)) {
+                delete window.CodeMirror.modes[`ad-${type}`];
+            }
+        });
+        this.app.workspace.onLayoutReady(() =>
+            this.app.workspace.iterateCodeMirrors((cm) =>
+                cm.setOption("mode", cm.getOption("mode")),
+            ),
+        );
     }
 
     onunload() {
