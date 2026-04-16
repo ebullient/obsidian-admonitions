@@ -106,9 +106,9 @@ export default class AdmonitionSetting extends PluginSettingTab {
             .setName(t9n("use-snippet.name"))
             .setDesc(t9n("use-snippet.desc"))
             .addToggle((t) =>
-                t.setValue(this.plugin.data.useSnippet).onChange((v) => {
+                t.setValue(this.plugin.data.useSnippet).onChange(async (v) => {
                     this.plugin.data.useSnippet = v;
-                    void this.plugin.saveSettings();
+                    await this.plugin.saveSettings();
                     this.plugin.calloutManager.setUseSnippet();
                 }),
             );
@@ -120,7 +120,7 @@ export default class AdmonitionSetting extends PluginSettingTab {
                 const b = button
                     .setTooltip(t9n("btn.add-additional"))
                     .setButtonText("+")
-                    .onClick(async () => {
+                    .onClick(() => {
                         const modal = new SettingsModal(this.plugin);
 
                         modal.onClose = () => {
@@ -630,6 +630,8 @@ export default class AdmonitionSetting extends PluginSettingTab {
                                     this.plugin.calloutManager.addAdmonition(
                                         modalAdmonition,
                                     );
+
+                                    void this.plugin.saveSettings();
 
                                     this.display();
                                 }
