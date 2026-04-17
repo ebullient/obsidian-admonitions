@@ -29,3 +29,5 @@ ad-test-vault/.obsidian/*
 !ad-test-vault/.obsidian/snippets/
 ad-test-vault/.obsidian/snippets/*
 !ad-test-vault/.obsidian/snippets/ad-test-vault-icon-css.css
+
+app*.css
